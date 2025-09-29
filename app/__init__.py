@@ -6,11 +6,11 @@ app = create_app()
 app.secret_key = 'your-secret'  # Replace with an environment
 
 # Register Blueprints
-from app.blueprints.examples import examples
 from app.blueprints.countries import countries
+from app.blueprints.cities import cities
 
-app.register_blueprint(examples, url_prefix='/example')
 app.register_blueprint(countries, url_prefix='/countries')
+app.register_blueprint(cities, url_prefix='/cities')
 
 from . import routes
 

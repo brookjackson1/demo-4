@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Cities</h1>
+    <div class="mb-3">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCityModal">
+            Add New City
+        </button>
+        <a href="{{ url_for('countries.show_countries') }}" class="btn btn-success">
+            Manage Countries
+        </a>
+    </div>
+
+    <!-- Table displaying all cities -->
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>City ID</th>
+                <th>City Name</th>
+                <th>Country</th>
+                <th>Population</th>
+                <th>Capital</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for city in all_cities %}
+            <tr>
+                <td>{{ city.city_id }}</td>
+                <td>{{ city.city_name }}</td>
+                <td>{{ city.country_name }}</td>
+                <td>{{ "{:,}".format(city.population) if city.population else 'N/A' }}</td>
+                <td>{{ "Yes" if city.is_capital else "No" }}</td>
+                <td>{{ city.created_at }}</td>
+                <td>{{ city.updated_at }}</td>
+                <td>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editCityModal{{ city.city_id }}">
+                        Edit
+                    </button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCityModal{{ city.city_id }}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Edit City Modal -->
+            <div class="modal fade" id="editCityModal{{ city.city_id }}" tabindex="-1" aria-labelledby="editCityModalLabel{{ city.city_id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editCityModalLabel{{ city.city_id }}">Edit City</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" action="{{ url_for('cities.update_city', city_id=city.city_id) }}">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="cityName" class="form-label">City Name</label>
+                                    <input type="text" class="form-control" name="city_name" value="{{ city.city_name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="country" class="form-label">Country</label>
+                                    <select class="form-control" name="country_id" required>
+                                        <option value="">Select Country</option>
+                                        {% for country in countries_list %}
+                                        <option value="{{ country.country_id }}" {{ 'selected' if country.country_id == city.country_id else '' }}>
+                                            {{ country.country_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="population" class="form-label">Population</label>
+                                    <input type="number" class="form-control" name="population" value="{{ city.population }}" min="0">
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" name="is_capital" id="isCapitalEdit{{ city.city_id }}" {{ 'checked' if city.is_capital else '' }}>
+                                    <label class="form-check-label" for="isCapitalEdit{{ city.city_id }}">
+                                        This is a capital city
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-warning">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete City Modal -->
+            <div class="modal fade" id="deleteCityModal{{ city.city_id }}" tabindex="-1" aria-labelledby="deleteCityModalLabel{{ city.city_id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteCityModalLabel{{ city.city_id }}">Delete City</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete {{ city.city_name }}, {{ city.country_name }}?
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post" action="{{ url_for('cities.delete_city', city_id=city.city_id) }}">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add City Modal -->
+<div class="modal fade" id="addCityModal" tabindex="-1" aria-labelledby="addCityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCityModalLabel">Add New City</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('cities.show_cities') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="cityName" class="form-label">City Name</label>
+                        <input type="text" class="form-control" name="city_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <select class="form-control" name="country_id" required>
+                            <option value="">Select Country</option>
+                            {% for country in countries_list %}
+                            <option value="{{ country.country_id }}">{{ country.country_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="population" class="form-label">Population</label>
+                        <input type="number" class="form-control" name="population" min="0">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_capital" id="isCapitalAdd">
+                        <label class="form-check-label" for="isCapitalAdd">
+                            This is a capital city
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add City</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
