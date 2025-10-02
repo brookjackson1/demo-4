@@ -1,9 +1,10 @@
+import os
 from flask import Flask, g
 from .app_factory import create_app
 from .db_connect import close_db, get_db
 
 app = create_app()
-app.secret_key = 'your-secret'  # Replace with an environment
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback-secret-key-for-development')
 
 # Register Blueprints
 from app.blueprints.countries import countries

@@ -10,16 +10,37 @@ def get_db():
     if 'db' not in g or not is_connection_open(g.db):
         print("Re-establishing closed database connection.")
         try:
+            # Check if all required environment variables are set
+            db_host = os.getenv('DB_HOST')
+            db_user = os.getenv('DB_USER')
+            db_password = os.getenv('DB_PASSWORD')
+            db_name = os.getenv('DB_NAME')
+
+            if not all([db_host, db_user, db_password, db_name]):
+                print("Missing database environment variables:")
+                print(f"DB_HOST: {'✓' if db_host else '✗'}")
+                print(f"DB_USER: {'✓' if db_user else '✗'}")
+                print(f"DB_PASSWORD: {'✓' if db_password else '✗'}")
+                print(f"DB_NAME: {'✓' if db_name else '✗'}")
+                g.db = None
+                return None
+
             g.db = pymysql.connect(
-                # Database configuration from environment variables
-                host=os.getenv('DB_HOST'),
-                user=os.getenv('DB_USER'),
-                password=os.getenv('DB_PASSWORD'),
-                database=os.getenv('DB_NAME'),
-                cursorclass=pymysql.cursors.DictCursor  # Set the default cursor class to DictCursor
+                host=db_host,
+                user=db_user,
+                password=db_password,
+                database=db_name,
+                cursorclass=pymysql.cursors.DictCursor,
+                connect_timeout=60,
+                read_timeout=60,
+                write_timeout=60,
+                charset='utf8mb4'
             )
+            print("Database connection established successfully.")
         except Exception as e:
             print(f"Database connection failed: {e}")
+            print(f"Host: {os.getenv('DB_HOST', 'Not set')}")
+            print(f"Database: {os.getenv('DB_NAME', 'Not set')}")
             g.db = None
             return None
     return g.db

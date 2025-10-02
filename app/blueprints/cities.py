@@ -23,14 +23,52 @@ def show_cities():
         flash('New city added successfully!', 'success')
         return redirect(url_for('cities.show_cities'))
 
-    # Handle GET request to display all cities with country names
-    cursor.execute('''
+    # Handle GET request with optional filtering
+    capital_filter = request.args.get('capital')
+    region_filter = request.args.get('region')
+
+    # Base query
+    base_query = '''
         SELECT c.city_id, c.city_name, c.population, c.is_capital,
-               co.country_name, co.country_id
+               co.country_name, co.country_id, co.continent
         FROM cities c
         JOIN countries co ON c.country_id = co.country_id
-        ORDER BY co.country_name, c.city_name
-    ''')
+    '''
+
+    # Apply filters
+    where_conditions = []
+    params = []
+
+    if capital_filter == 'true':
+        where_conditions.append('c.is_capital = 1')
+        flash('Showing capital cities only', 'info')
+    elif capital_filter == 'false':
+        where_conditions.append('c.is_capital = 0')
+        flash('Showing major cities (non-capitals)', 'info')
+
+    if region_filter:
+        if region_filter == 'Americas':
+            where_conditions.append('(co.continent = %s OR co.continent = %s)')
+            params.extend(['North America', 'South America'])
+            flash('Showing cities in the Americas', 'info')
+        elif region_filter == 'Europe':
+            where_conditions.append('co.continent = %s')
+            params.append('Europe')
+            flash('Showing cities in Europe', 'info')
+        elif region_filter == 'Asia':
+            where_conditions.append('(co.continent = %s OR co.continent = %s)')
+            params.extend(['Asia', 'Oceania'])
+            flash('Showing cities in Asia & Oceania', 'info')
+
+    # Construct final query
+    if where_conditions:
+        query = base_query + ' WHERE ' + ' AND '.join(where_conditions)
+    else:
+        query = base_query
+
+    query += ' ORDER BY co.country_name, c.city_name'
+
+    cursor.execute(query, params)
     all_cities = cursor.fetchall()
 
     # Get countries for dropdown

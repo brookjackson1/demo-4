@@ -1,7 +1,93 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>About</h1>
-<br>
-<p>This website is designed to display example data tables using Pandas and Flask operations. Users can perform basic CRUD operations to add, manipulate, and sort records. A calculation of average points per player will also be available.</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h1 class="display-5 text-center mb-4">
+                        <i class="fas fa-globe-americas me-3" style="color: var(--global-accent);"></i>
+                        About Global Cities Hub
+                    </h1>
+
+                    <div class="text-center mb-4">
+                        <p class="lead">Celebrating the diversity and interconnectedness of our world</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="feature-box text-center p-3">
+                                <i class="fas fa-flag fa-2x mb-3" style="color: var(--global-accent);"></i>
+                                <h5>195 Countries</h5>
+                                <p class="text-muted">Explore nations across all continents, from the most populous to the smallest island nations.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-box text-center p-3">
+                                <i class="fas fa-city fa-2x mb-3" style="color: var(--global-success);"></i>
+                                <h5>Global Cities</h5>
+                                <p class="text-muted">Discover major metropolitan areas, capitals, and cultural centers that shape our world.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mission-section">
+                        <h3 class="mb-3"><i class="fas fa-heart me-2" style="color: #e74c3c;"></i>Our Mission</h3>
+                        <p>This platform celebrates the beautiful diversity of our global community. Every country and city has a unique story, culture, and contribution to our shared human experience. Through data and exploration, we aim to foster understanding and appreciation for the rich tapestry of our world.</p>
+
+                        <h4 class="mt-4 mb-3"><i class="fas fa-tools me-2" style="color: var(--global-secondary);"></i>Features</h4>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-plus-circle me-2" style="color: var(--global-success);"></i>Add and manage country information</li>
+                            <li><i class="fas fa-edit me-2" style="color: var(--global-accent);"></i>Update city details and demographics</li>
+                            <li><i class="fas fa-search me-2" style="color: #f39c12;"></i>Search and filter by regions and characteristics</li>
+                            <li><i class="fas fa-chart-bar me-2" style="color: #9b59b6;"></i>View population statistics and capital cities</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">
+                            <i class="fas fa-quote-left me-1"></i>
+                            "We are all citizens of one world, we are all of one blood."
+                            <i class="fas fa-quote-right ms-1"></i>
+                        </p>
+                        <p class="small text-muted">- Jean Jacques Rousseau</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feature-box {
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+}
+
+.mission-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
+</style>
 {% endblock %}

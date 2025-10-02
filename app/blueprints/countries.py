@@ -23,10 +23,17 @@ def show_countries():
         flash('New country added successfully!', 'success')
         return redirect(url_for('countries.show_countries'))
 
-    # Handle GET request to display all countries
-    cursor.execute('SELECT * FROM countries ORDER BY country_name')
+    # Handle GET request with optional filtering
+    continent_filter = request.args.get('continent')
+
+    if continent_filter:
+        cursor.execute('SELECT * FROM countries WHERE continent = %s ORDER BY country_name', (continent_filter,))
+        flash(f'Showing countries in {continent_filter}', 'info')
+    else:
+        cursor.execute('SELECT * FROM countries ORDER BY country_name')
+
     all_countries = cursor.fetchall()
-    return render_template('countries.html', all_countries=all_countries)
+    return render_template('countries.html', all_countries=all_countries, selected_continent=continent_filter)
 
 @countries.route('/update_country/<int:country_id>', methods=['POST'])
 def update_country(country_id):

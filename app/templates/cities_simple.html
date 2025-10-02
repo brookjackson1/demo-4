@@ -3,13 +3,33 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Cities</h1>
-    <div class="mb-3">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCityModal">
-            Add New City
-        </button>
-        <a href="{{ url_for('countries.show_countries') }}" class="btn btn-success">
-            Manage Countries
-        </a>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCityModal">
+                Add New City
+            </button>
+            <a href="{{ url_for('countries.show_countries') }}" class="btn btn-success">
+                Manage Countries
+            </a>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <select class="form-select me-2" onchange="filterByCountry(this.value)">
+                    <option value="">All Countries</option>
+                    {% for country in countries_list %}
+                    <option value="{{ country.country_name }}">{{ country.country_name }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select me-2" onchange="filterByCapital(this.value)">
+                    <option value="">All Cities</option>
+                    <option value="yes">Capitals Only</option>
+                    <option value="no">Non-Capitals</option>
+                </select>
+                <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Table displaying all cities -->
@@ -158,4 +178,83 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterByCountry(country) {
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        if (!country) {
+            row.style.display = '';
+        } else {
+            const countryCell = row.cells[2]; // Country column
+            const countryText = countryCell.textContent.trim();
+
+            if (countryText === country) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+
+    updateRowCount();
+}
+
+function filterByCapital(isCapital) {
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        if (!isCapital) {
+            row.style.display = '';
+        } else {
+            const capitalCell = row.cells[4]; // Capital column
+            const capitalText = capitalCell.textContent.trim().toLowerCase();
+
+            if ((isCapital === 'yes' && capitalText === 'yes') ||
+                (isCapital === 'no' && capitalText === 'no')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+
+    updateRowCount();
+}
+
+function clearFilters() {
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => select.value = '');
+
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+    updateRowCount();
+}
+
+function updateRowCount() {
+    const visibleRows = document.querySelectorAll('tbody tr[style=""], tbody tr:not([style])');
+    const totalRows = document.querySelectorAll('tbody tr').length;
+
+    let countDisplay = document.getElementById('rowCount');
+    if (!countDisplay) {
+        countDisplay = document.createElement('div');
+        countDisplay.id = 'rowCount';
+        countDisplay.className = 'text-muted mb-2';
+        document.querySelector('table').parentNode.insertBefore(countDisplay, document.querySelector('table'));
+    }
+
+    const visibleCount = visibleRows.length;
+    if (visibleCount === totalRows) {
+        countDisplay.textContent = `Showing all ${totalRows} cities`;
+    } else {
+        countDisplay.textContent = `Showing ${visibleCount} of ${totalRows} cities`;
+    }
+}
+
+// Initialize count on page load
+document.addEventListener('DOMContentLoaded', updateRowCount);
+</script>
 {% endblock %}

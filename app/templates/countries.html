@@ -3,13 +3,32 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Countries</h1>
-    <div class="mb-3">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal">
-            Add New Country
-        </button>
-        <a href="{{ url_for('cities.show_cities') }}" class="btn btn-success">
-            Manage Cities
-        </a>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal">
+                Add New Country
+            </button>
+            <a href="{{ url_for('cities.show_cities') }}" class="btn btn-success">
+                Manage Cities
+            </a>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <select class="form-select me-2" onchange="filterByContinent(this.value)">
+                    <option value="">All Continents</option>
+                    <option value="Africa">Africa</option>
+                    <option value="Asia">Asia</option>
+                    <option value="Europe">Europe</option>
+                    <option value="North America">North America</option>
+                    <option value="South America">South America</option>
+                    <option value="Oceania">Oceania</option>
+                    <option value="Antarctica">Antarctica</option>
+                </select>
+                <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Table displaying all countries -->
@@ -161,4 +180,59 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterByContinent(continent) {
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        if (!continent) {
+            row.style.display = '';
+        } else {
+            const continentCell = row.cells[3]; // Continent column
+            const continentText = continentCell.textContent.trim();
+
+            if (continentText === continent) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+
+    updateRowCount();
+}
+
+function clearFilters() {
+    document.querySelector('select').value = '';
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+    updateRowCount();
+}
+
+function updateRowCount() {
+    const visibleRows = document.querySelectorAll('tbody tr[style=""], tbody tr:not([style])');
+    const totalRows = document.querySelectorAll('tbody tr').length;
+
+    let countDisplay = document.getElementById('rowCount');
+    if (!countDisplay) {
+        countDisplay = document.createElement('div');
+        countDisplay.id = 'rowCount';
+        countDisplay.className = 'text-muted mb-2';
+        document.querySelector('table').parentNode.insertBefore(countDisplay, document.querySelector('table'));
+    }
+
+    const visibleCount = visibleRows.length;
+    if (visibleCount === totalRows) {
+        countDisplay.textContent = `Showing all ${totalRows} countries`;
+    } else {
+        countDisplay.textContent = `Showing ${visibleCount} of ${totalRows} countries`;
+    }
+}
+
+// Initialize count on page load
+document.addEventListener('DOMContentLoaded', updateRowCount);
+</script>
 {% endblock %}

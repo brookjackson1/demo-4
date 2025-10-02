@@ -15,7 +15,11 @@
       "WebFetch(domain:www.brandcolorcode.com)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(del \"C:\\Users\\brook\\OneDrive\\Desktop\\marshall\\demo-4\\app\\blueprints\\examples.py\")",
+      "Bash(git rm:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
